@@ -114,10 +114,38 @@ public class GestureRecognition : MonoBehaviour
             // Normalize the swipe direction to avoid extreme movement, multiply by speed
             float rotationAmount = swipeDirection.magnitude * rotationSpeed;
             targetObject.Rotate(axis, rotationAmount, Space.World);
+
+            // Start the coroutine to change the object's color
+            StartCoroutine(ChangeObjectColorForSeconds(Color.green, 2f));
         }
         else
         {
             Debug.LogWarning("No target object assigned for rotation.");
+        }
+    }
+    private IEnumerator ChangeObjectColorForSeconds(Color color, float duration)
+    {
+        if (swipeable != null)
+        {
+            Renderer renderer = swipeable.GetComponent<Renderer>();
+            if (renderer != null)
+            {
+                // Save the original color
+                Color originalColor = renderer.material.color;
+
+                // Change to the new color
+                renderer.material.color = color;
+
+                // Wait for the specified duration
+                yield return new WaitForSeconds(duration);
+
+                // Revert to the original color
+                renderer.material.color = originalColor;
+            }
+        }
+        else
+        {
+            Debug.LogWarning("Swipeable object is not assigned.");
         }
     }
 
