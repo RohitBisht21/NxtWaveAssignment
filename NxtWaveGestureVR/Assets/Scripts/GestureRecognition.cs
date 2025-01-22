@@ -12,19 +12,27 @@ public class GestureRecognition : MonoBehaviour
     public float pinchThreshold = 0.8f; // For the grab gesture
     public float overlapSphereConst = 0.1f; // For collider search radius
     public float swipeThreshold = 0.05f; // Movement distance for the swipe gesture
-    private float rotationSpeed = 1000f; // speed to rotate per swipe
+    private float rotationSpeed = 100000f; // speed to rotate per swipe
 
     private Vector3 previousSwipePosition;
     private bool isSwiping;
 
     public Transform targetObject;  // The object to rotate
+    private Quaternion targetRotation;
 
-   [SerializeField]private SwipeableObject swipeable;
+    [SerializeField]private SwipeableObject swipeable;
     private GrabbableObject grabbedObjectLeft;
+
  
 
     private void Update()
     {
+        // Smoothly rotate the object toward the target rotation
+        if (targetObject != null)
+        {
+            targetObject.rotation = Quaternion.Lerp(targetObject.rotation, targetRotation, Time.deltaTime * 5f);
+        }
+
         //Use Left hand to Pinch and Grab
         HandleGesture(leftHand, ref grabbedObjectLeft);
 
@@ -91,7 +99,7 @@ public class GestureRecognition : MonoBehaviour
                 Vector3 swipeDirection = currentPosition - previousSwipePosition;
             if(swipeDirection.x >(2 * swipeThreshold))
                 {
-                    RotateObject(swipeDirection, swipeAxis);
+                    RotateObject(swipeDirection, -swipeAxis);
                 }
                 // Rotate the object based on the swipe direction
 
@@ -111,9 +119,11 @@ public class GestureRecognition : MonoBehaviour
     {
         if (targetObject != null)
         {
-            // Normalize the swipe direction to avoid extreme movement, multiply by speed
-            float rotationAmount = swipeDirection.magnitude * rotationSpeed;
-            targetObject.Rotate(axis, rotationAmount, Space.World);
+          // Normalize the swipe direction to avoid extreme movement
+        float rotationAmount = swipeDirection.magnitude * rotationSpeed * Time.deltaTime;
+
+            // Calculate the target rotation based on the swipe axis and direction
+            targetRotation = targetObject.rotation * Quaternion.AngleAxis(rotationAmount, axis);
 
             // Start the coroutine to change the object's color
             StartCoroutine(ChangeObjectColorForSeconds(Color.green, 2f));
