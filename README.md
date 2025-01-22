@@ -35,7 +35,7 @@ This project creates a VR environment where users can interact with objects usin
 
 Add your images for gestures here:
 
-- **Pinch Gesture**: ![Pinch Gesture](Assets\Sprites\Pinch.png)
-- **Swipe Gesture**: ![Swipe Gesture](Assets\Sprites\SwipeBegin.png)
+- **Pinch Gesture**: ![Pinch Gesture](NxtWaveGestureVR/Assets/Sprites/Pinch.png)
+- **Swipe Gesture**: ![Swipe Gesture](NxtWaveGestureVR/Assets/Sprites/SwipeBegin.png)
 
 ## Contact
