@@ -25,6 +25,8 @@ public class GrabbableObject : MonoBehaviour
         positionOffset = transform.position - hand.position;
         rotationOffset = Quaternion.Inverse(hand.rotation) * transform.rotation;
 
+        transform.SetParent(hand);
+
         rb.isKinematic = true; // Disable physics while grabbing
 
         SetColor(Color.green); // Change color to green when grabbed
@@ -35,7 +37,7 @@ public class GrabbableObject : MonoBehaviour
         isGrabbed = false;
         handTransform = null;
         rb.isKinematic = false; // Re-enable physics
-
+        transform.SetParent(null);
         // Change color back to yellow if still touching, otherwise red
         SetColor(isTouchingHand ? Color.yellow : Color.red);
     }

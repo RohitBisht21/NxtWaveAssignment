@@ -12,8 +12,7 @@ public class GestureRecognition : MonoBehaviour
     public float pinchThreshold = 0.8f; // For the grab gesture
     public float overlapSphereConst = 0.1f; // For collider search radius
     public float swipeThreshold = 0.05f; // Movement distance for the swipe gesture
-    public float rotationAngle = 45f; // Degrees to rotate per swipe
-    private float rotationSpeed = 500f; // speed to rotate per swipe
+    private float rotationSpeed = 1000f; // speed to rotate per swipe
 
     private Vector3 previousSwipePosition;
     private bool isSwiping;
