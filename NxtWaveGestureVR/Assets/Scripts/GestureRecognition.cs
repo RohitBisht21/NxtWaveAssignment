@@ -4,28 +4,36 @@ using UnityEngine;
 
 public class GestureRecognition : MonoBehaviour
 {
+    // OVR Hand tracking references
     public OVRHand leftHand;
     public OVRHand rightHand;
 
     // Thresholds for gestures
     public float pinchThreshold = 0.8f; // For the grab gesture
-    public float swipeThreshold = 0.2f; // Movement distance for the swipe gesture
+    public float overlapSphereConst = 0.1f; // For collider search radius
+    public float swipeThreshold = 0.05f; // Movement distance for the swipe gesture
     public float rotationAngle = 45f; // Degrees to rotate per swipe
+    private float rotationSpeed = 500f; // speed to rotate per swipe
 
-    private Vector3 initialSwipePosition;
+    private Vector3 previousSwipePosition;
     private bool isSwiping;
 
     public Transform targetObject;  // The object to rotate
 
+   [SerializeField]private SwipeableObject swipeable;
     private GrabbableObject grabbedObjectLeft;
+ 
 
     private void Update()
     {
         //Use Left hand to Pinch and Grab
         HandleGesture(leftHand, ref grabbedObjectLeft);
 
-        // Use Right hand to Swipe and Rotate
-        DetectSwipeGesture(rightHand, Vector3.up);
+        // Use Right hand to Swipe and Rotate (only if hand is touching the object)
+        if (swipeable != null && swipeable.IsHandTouching)
+        {
+            DetectSwipeGesture(rightHand, Vector3.up);
+        }
     }
 
     private void HandleGesture(OVRHand hand, ref GrabbableObject grabbedObject)
@@ -56,7 +64,7 @@ public class GestureRecognition : MonoBehaviour
 
     private GrabbableObject TryGrabObject(OVRHand hand)
     {
-        Collider[] colliders = Physics.OverlapSphere(hand.transform.position, 0.1f);
+        Collider[] colliders = Physics.OverlapSphere(hand.transform.position, overlapSphereConst);
         foreach (var collider in colliders)
         {
             GrabbableObject grabbable = collider.GetComponent<GrabbableObject>();
@@ -71,44 +79,48 @@ public class GestureRecognition : MonoBehaviour
 
     private void DetectSwipeGesture(OVRHand hand, Vector3 swipeAxis)
     {
-        if (!isSwiping && hand.IsTracked)
-        {
-            initialSwipePosition = hand.transform.position;
-            isSwiping = true;
-        }
-
-        if (isSwiping)
+        if (hand.IsTracked)
         {
             Vector3 currentPosition = hand.transform.position;
-            float swipeDistance = Vector3.Distance(initialSwipePosition, currentPosition);
+
+            // Detect swipe direction only if the movement is large enough
+            float swipeDistance = Vector3.Distance(previousSwipePosition, currentPosition);
 
             if (swipeDistance > swipeThreshold)
             {
-                Vector3 swipeDirection = currentPosition - initialSwipePosition;
-
-                // Normalize the swipe direction and check if it aligns with the swipe axis
-                float dotProduct = Vector3.Dot(swipeDirection.normalized, swipeAxis);
-
-                if (dotProduct > 0.15f) // Ensure the swipe aligns with the specified axis
+                // Calculate swipe direction based on movement between frames
+                Vector3 swipeDirection = currentPosition - previousSwipePosition;
+            if(swipeDirection.x >(2 * swipeThreshold))
                 {
-                    RotateObject(swipeAxis);
+                    RotateObject(swipeDirection, swipeAxis);
                 }
+                // Rotate the object based on the swipe direction
 
-                isSwiping = false; // Reset swipe detection
+                // Update the previous position for the next frame
+                previousSwipePosition = currentPosition;
+            }
+            else if (!isSwiping)
+            {
+                // Set initial swipe position when the swipe starts
+                previousSwipePosition = currentPosition;
+                isSwiping = true;
             }
         }
     }
 
-    private void RotateObject(Vector3 axis)
+    private void RotateObject(Vector3 swipeDirection, Vector3 axis)
     {
         if (targetObject != null)
         {
-            targetObject.Rotate(axis, rotationAngle, Space.World);
+            // Normalize the swipe direction to avoid extreme movement, multiply by speed
+            float rotationAmount = swipeDirection.magnitude * rotationSpeed;
+            targetObject.Rotate(axis, rotationAmount, Space.World);
         }
         else
         {
             Debug.LogWarning("No target object assigned for rotation.");
         }
     }
+
 }
 
