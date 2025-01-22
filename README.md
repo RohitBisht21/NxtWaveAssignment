@@ -23,7 +23,6 @@ This project creates a VR environment where users can interact with objects usin
 ## Tools Used
 - **Unity 3D**
 - **C# scripting**
-- **Unity’s Input System**
 - **Meta XR SDK**
 
 ## How to Use
@@ -38,4 +37,12 @@ Add your images for gestures here:
 - **Pinch Gesture**: ![Pinch Gesture](NxtWaveGestureVR/Assets/Sprites/Pinch.png)
 - **Swipe Gesture Begin**: ![Swipe Gesture](NxtWaveGestureVR/Assets/Sprites/SwipeBegin.png)
 - **Swipe Gesture End**: ![Swipe Gesture](NxtWaveGestureVR/Assets/Sprites/SwipeEnd.png)
-## Contact
+  
+## 📬 **Contact**  
+Developed by **Rohit Bisht** 🚀  
+- 📧 Email: [rbisht882@gmail.com](mailto:rbisht882@gmail.com)  
+- 🌐 Connect with me for more awesome projects!  
+
+---
+
+### ⭐ **If you enjoy the project, don’t forget to star the repo!**  
